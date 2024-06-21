@@ -10,7 +10,7 @@
 			"encrypt": "mandatory",
 			"trustServerCertificate": false,
 			"authenticationType": "SQL",
-			"userName": "dat",
+			"userName": "sa",
 			"password": {
 				"type": "SecureString",
 				"value": "**********"
