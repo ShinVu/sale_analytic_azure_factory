@@ -1,0 +1,9 @@
+{
+	"name": "dev-runtime-2153",
+	"properties": {
+		"type": "SelfHosted",
+		"typeProperties": {
+			"selfContainedInteractiveAuthoringEnabled": false
+		}
+	}
+}
