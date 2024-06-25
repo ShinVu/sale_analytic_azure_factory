@@ -1,0 +1,14 @@
+{
+	"name": "AzureDataLakeStorage1",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://devstorageshin.dfs.core.windows.net/",
+			"credential": {
+				"referenceName": "data_factory_bronze_container",
+				"type": "CredentialReference"
+			}
+		}
+	}
+}
