@@ -1,0 +1,15 @@
+{
+	"name": "linked_services_key_vault_custom",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://dev-key-vault-shin-21.vault.azure.net/",
+			"credential": {
+				"referenceName": "data_factory_key_vault_identity",
+				"type": "CredentialReference"
+			}
+		},
+		"annotations": []
+	}
+}

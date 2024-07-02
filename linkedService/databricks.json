@@ -1,0 +1,16 @@
+{
+	"name": "databricks",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "ADB Linked Service via MSI",
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"accessToken": null,
+			"authentication": "MSI",
+			"domain": "https://adb-3979401483658067.7.azuredatabricks.net",
+			"existingClusterId": "0701-090647-whusczi9",
+			"workspaceResourceId": "/subscriptions/55a851c4-b3bf-4b1c-926a-af6cdad646b9/resourceGroups/dev_rg-direct-foal/providers/Microsoft.Databricks/workspaces/dev-databrick-2153"
+		},
+		"annotations": []
+	}
+}

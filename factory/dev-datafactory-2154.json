@@ -1,0 +1,23 @@
+{
+	"name": "dev-datafactory-2154",
+	"location": "southeastasia",
+	"identity": {
+		"type": "SystemAssigned,UserAssigned",
+		"principalId": "e906d011-66e1-4168-8a29-e9a18a13ae34",
+		"tenantId": "1afe8513-a735-4777-bffc-1df86d3b1fc7",
+		"userAssignedIdentities": {
+			"/subscriptions/55a851c4-b3bf-4b1c-926a-af6cdad646b9/resourcegroups/dev_rg-direct-foal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/data_factory_bronze_container_identity": {
+				"clientId": "a25ff884-fccb-4041-b282-a8ffb35fdf6e",
+				"principalId": "77d8bdbc-c8a0-4ea8-8bc6-508d85b9ac1a"
+			},
+			"/subscriptions/55a851c4-b3bf-4b1c-926a-af6cdad646b9/resourcegroups/dev_rg-direct-foal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/data_factory_key_vault_identity": {
+				"clientId": "2ae2c78a-9bb5-47e9-934c-842ffd60bbf6",
+				"principalId": "7bfe8fad-e305-4143-b124-3dd10194d33f"
+			},
+			"/subscriptions/55a851c4-b3bf-4b1c-926a-af6cdad646b9/resourcegroups/dev_rg-direct-foal/providers/Microsoft.ManagedIdentity/userAssignedIdentities/adf_databrick_identity": {
+				"clientId": "ec6c7d52-f2ac-4382-a1db-2b37c246b192",
+				"principalId": "ab8db920-0586-4843-8cd1-69bf7a97d9a9"
+			}
+		}
+	}
+}

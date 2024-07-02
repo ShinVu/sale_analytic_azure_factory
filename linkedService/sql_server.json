@@ -1,0 +1,19 @@
+{
+	"name": "sql_server",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Data Source=localhost;Initial Catalog=AdventureWorks;User ID=dat;",
+			"password": {
+				"secretName": "db-password",
+				"store": {
+					"referenceName": "linked_services_key_vault_custom",
+					"type": "LinkedServiceReference"
+				},
+				"type": "AzureKeyVaultSecret"
+			}
+		},
+		"annotations": []
+	}
+}
