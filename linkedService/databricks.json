@@ -7,9 +7,9 @@
 		"typeProperties": {
 			"accessToken": null,
 			"authentication": "MSI",
-			"domain": "https://adb-3979401483658067.7.azuredatabricks.net",
-			"existingClusterId": "0701-090647-whusczi9",
-			"workspaceResourceId": "/subscriptions/55a851c4-b3bf-4b1c-926a-af6cdad646b9/resourceGroups/dev_rg-direct-foal/providers/Microsoft.Databricks/workspaces/dev-databrick-2153"
+			"domain": "https://adb-4061349368925953.13.azuredatabricks.net",
+			"existingClusterId": "0703-092103-emljuk36",
+			"workspaceResourceId": "/subscriptions/55a851c4-b3bf-4b1c-926a-af6cdad646b9/resourceGroups/dev_rg-supreme-bass/providers/Microsoft.Databricks/workspaces/dev-databrick-2153"
 		},
 		"annotations": []
 	}
