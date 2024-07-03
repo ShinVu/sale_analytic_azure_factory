@@ -3,20 +3,20 @@
 	"location": "southeastasia",
 	"identity": {
 		"type": "SystemAssigned,UserAssigned",
-		"principalId": "4b0579e9-fb96-409f-861e-181e1eec63ce",
+		"principalId": "26a11e0f-8dad-4294-a765-e743a5777aa4",
 		"tenantId": "1afe8513-a735-4777-bffc-1df86d3b1fc7",
 		"userAssignedIdentities": {
-			"/subscriptions/55a851c4-b3bf-4b1c-926a-af6cdad646b9/resourcegroups/dev_rg-supreme-bass/providers/Microsoft.ManagedIdentity/userAssignedIdentities/adf_databrick_identity": {
-				"clientId": "35202ac9-8e87-4e01-8362-e7298a5f2cca",
-				"principalId": "9d1a7141-faca-42fe-a14e-0c75f2e0279e"
+			"/subscriptions/55a851c4-b3bf-4b1c-926a-af6cdad646b9/resourcegroups/dev_rg-charming-dinosaur/providers/Microsoft.ManagedIdentity/userAssignedIdentities/data_factory_bronze_container_identity": {
+				"clientId": "2a658297-1bb4-4ba5-ae0a-81c02fa270ce",
+				"principalId": "240b032e-bed5-4062-beb4-c1d8a454012a"
 			},
-			"/subscriptions/55a851c4-b3bf-4b1c-926a-af6cdad646b9/resourcegroups/dev_rg-supreme-bass/providers/Microsoft.ManagedIdentity/userAssignedIdentities/data_factory_bronze_container_identity": {
-				"clientId": "903d94db-b049-4511-adff-9742308400eb",
-				"principalId": "afda405a-8268-40fa-b06f-8080fcef2b6f"
+			"/subscriptions/55a851c4-b3bf-4b1c-926a-af6cdad646b9/resourcegroups/dev_rg-charming-dinosaur/providers/Microsoft.ManagedIdentity/userAssignedIdentities/adf_databrick_identity": {
+				"clientId": "5e4f6b10-318d-497c-8c40-c86d066b58f7",
+				"principalId": "67616a7b-5aa2-423c-a73a-974d8b7769e5"
 			},
-			"/subscriptions/55a851c4-b3bf-4b1c-926a-af6cdad646b9/resourcegroups/dev_rg-supreme-bass/providers/Microsoft.ManagedIdentity/userAssignedIdentities/data_factory_key_vault_identity": {
-				"clientId": "4a431cb3-e9ea-403e-b170-922ade597ba5",
-				"principalId": "f4abed82-3b73-4e2a-9900-b02d5aac95af"
+			"/subscriptions/55a851c4-b3bf-4b1c-926a-af6cdad646b9/resourcegroups/dev_rg-charming-dinosaur/providers/Microsoft.ManagedIdentity/userAssignedIdentities/data_factory_key_vault_identity": {
+				"clientId": "10c7244b-e84c-4bdb-99bd-fc845809b6de",
+				"principalId": "bd04b694-c1a4-4e49-8d90-4b514b4cd192"
 			}
 		}
 	}
