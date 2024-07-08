@@ -7,33 +7,22 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-datafactory-2154"
 		},
-		"AzureDatabricks1_accessToken": {
+		"sql_server_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks1'"
+			"metadata": "Secure string for 'connectionString' of 'sql_server'",
+			"defaultValue": "Integrated Security=False;Data Source=localhost;Initial Catalog=AdventureWorks;User ID=dat"
 		},
-		"AzureDataLakeStorage1_properties_typeProperties_url": {
+		"databricks_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0703-105957-mmt3gzht"
+		},
+		"linked_services_data_lake_storage_gen2_custom_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://devstorageshin.dfs.core.windows.net/"
 		},
-		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
-			"type": "string",
-			"defaultValue": "0630-100548-6noyj8pd"
-		},
-		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+		"linked_services_key_vault_custom_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://dev-key-vault-shin-21.vault.azure.net/"
-		},
-		"SqlServer1_properties_typeProperties_server": {
-			"type": "string",
-			"defaultValue": "localhost"
-		},
-		"SqlServer1_properties_typeProperties_database": {
-			"type": "string",
-			"defaultValue": "AdventureWorks"
-		},
-		"SqlServer1_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "dat"
 		},
 		"containerUri": {
 			"type": "string",
@@ -62,26 +51,17 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"AzureDatabricks1_accessToken": {
-						"value": "[parameters('AzureDatabricks1_accessToken')]"
+					"sql_server_connectionString": {
+						"value": "[parameters('sql_server_connectionString')]"
 					},
-					"AzureDatabricks1_properties_typeProperties_existingClusterId": {
-						"value": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"
+					"databricks_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('databricks_properties_typeProperties_existingClusterId')]"
 					},
-					"AzureDataLakeStorage1_properties_typeProperties_url": {
-						"value": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]"
+					"linked_services_data_lake_storage_gen2_custom_properties_typeProperties_url": {
+						"value": "[parameters('linked_services_data_lake_storage_gen2_custom_properties_typeProperties_url')]"
 					},
-					"AzureKeyVault1_properties_typeProperties_baseUrl": {
-						"value": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
-					},
-					"SqlServer1_properties_typeProperties_server": {
-						"value": "[parameters('SqlServer1_properties_typeProperties_server')]"
-					},
-					"SqlServer1_properties_typeProperties_database": {
-						"value": "[parameters('SqlServer1_properties_typeProperties_database')]"
-					},
-					"SqlServer1_properties_typeProperties_userName": {
-						"value": "[parameters('SqlServer1_properties_typeProperties_userName')]"
+					"linked_services_key_vault_custom_properties_typeProperties_baseUrl": {
+						"value": "[parameters('linked_services_key_vault_custom_properties_typeProperties_baseUrl')]"
 					}
 				}
 			},

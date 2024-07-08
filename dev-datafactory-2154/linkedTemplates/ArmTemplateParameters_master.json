@@ -5,26 +5,17 @@
 		"factoryName": {
 			"value": "dev-datafactory-2154"
 		},
-		"AzureDatabricks1_accessToken": {
-			"value": ""
+		"sql_server_connectionString": {
+			"value": "Integrated Security=False;Data Source=localhost;Initial Catalog=AdventureWorks;User ID=dat"
 		},
-		"AzureDataLakeStorage1_properties_typeProperties_url": {
+		"databricks_properties_typeProperties_existingClusterId": {
+			"value": "0703-105957-mmt3gzht"
+		},
+		"linked_services_data_lake_storage_gen2_custom_properties_typeProperties_url": {
 			"value": "https://devstorageshin.dfs.core.windows.net/"
 		},
-		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
-			"value": "0630-100548-6noyj8pd"
-		},
-		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+		"linked_services_key_vault_custom_properties_typeProperties_baseUrl": {
 			"value": "https://dev-key-vault-shin-21.vault.azure.net/"
-		},
-		"SqlServer1_properties_typeProperties_server": {
-			"value": "localhost"
-		},
-		"SqlServer1_properties_typeProperties_database": {
-			"value": "AdventureWorks"
-		},
-		"SqlServer1_properties_typeProperties_userName": {
-			"value": "dat"
 		},
 		"containerUri": {
 			"value": ""
