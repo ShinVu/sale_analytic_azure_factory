@@ -426,8 +426,8 @@
 				"type": "ScheduleTrigger",
 				"typeProperties": {
 					"recurrence": {
-						"frequency": "Month",
-						"interval": 1,
+						"frequency": "Minute",
+						"interval": 5,
 						"startTime": "2024-07-07T00:00:00",
 						"timeZone": "SE Asia Standard Time"
 					}
