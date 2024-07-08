@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "full_load",
+					"referenceName": "full_load_look_up",
 					"type": "PipelineReference"
 				}
 			}
