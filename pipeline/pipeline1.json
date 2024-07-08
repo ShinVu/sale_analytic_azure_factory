@@ -1,0 +1,11 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"variables": {
+			"ugjhg": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
