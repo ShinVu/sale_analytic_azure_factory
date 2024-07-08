@@ -182,10 +182,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@{concat(dataset().table_name,'_',utcNow('yyyyMMdd'),'.parquet')}",
-							"type": "Expression"
-						},
 						"folderPath": {
 							"value": "@{concat(dataset().schema_name,'/',dataset().table_name,'/','FullLoad','/',utcNow('yyyy/MM/dd'))}",
 							"type": "Expression"
@@ -326,6 +322,24 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/EachTablePartitionKey')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_server",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_server')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/full_load')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -381,7 +395,14 @@
 									"name": "CopyEachTable",
 									"description": "Copy each table from the lookup activities",
 									"type": "Copy",
-									"dependsOn": [],
+									"dependsOn": [
+										{
+											"activity": "LookUpTablePartitionMinMax",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
 									"policy": {
 										"timeout": "0.12:00:00",
 										"retry": 0,
@@ -394,11 +415,16 @@
 										"source": {
 											"type": "SqlServerSource",
 											"sqlReaderQuery": {
-												"value": "@{concat('SELECT * FROM ',item().schema_name,'.',item().table_name)}",
+												"value": "@{concat('SELECT * FROM ',item().schema_name,'.',item().table_name,' WHERE ?DfDynamicRangePartitionCondition')}",
 												"type": "Expression"
 											},
 											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
+											"partitionOption": "DynamicRange",
+											"partitionSettings": {
+												"partitionColumnName": "ModifiedDate",
+												"partitionUpperBound": "",
+												"partitionLowerBound": ""
+											}
 										},
 										"sink": {
 											"type": "ParquetSink",
@@ -442,6 +468,37 @@
 											}
 										}
 									]
+								},
+								{
+									"name": "LookUpTablePartitionMinMax",
+									"description": "Look up for the min,max value of the partition in copy activity",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"sqlReaderQuery": {
+												"value": "@{\n    concat(\n        'SELECT \n            MAX(YEAR(ModifiedDate)) AS MaxModifiedDate,\n            MIN(YEAR(ModifiedDate)) AS MinModifiedDate\n        FROM ', item().schema_name, '.', item().table_name\n    )\n}",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "EachTablePartitionKey",
+											"type": "DatasetReference",
+											"parameters": {}
+										},
+										"firstRowOnly": false
+									}
 								}
 							]
 						}
@@ -455,7 +512,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/lookUpQueryTables')]",
 				"[concat(variables('factoryId'), '/datasets/EachTableDataset')]",
-				"[concat(variables('factoryId'), '/datasets/ParquetTable')]"
+				"[concat(variables('factoryId'), '/datasets/ParquetTable')]",
+				"[concat(variables('factoryId'), '/datasets/EachTablePartitionKey')]"
 			]
 		},
 		{
