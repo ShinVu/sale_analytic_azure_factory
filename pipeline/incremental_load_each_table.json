@@ -37,7 +37,7 @@
 					"source": {
 						"type": "SqlServerSource",
 						"sqlReaderQuery": {
-							"value": "SELECT\n    DST.*,\n    CT.SYS_CHANGE_VERSION,\n    CT.SYS_CHANGE_OPERATION\nFROM\n    @{pipeline().parameters.schema_name}.@{pipeline().parameters.table_name} AS DST\n    RIGHT OUTER JOIN CHANGETABLE(CHANGES @{pipeline().parameters.schema_name}.@{pipeline().parameters.table_name}, @{activity('LookupLastChangeTrackingVersionActivity').output.firstRow.SYS_CHANGE_VERSION}) AS CT\n    ON DST.AddressID = CT.AddressID\nWHERE\n    CT.SYS_CHANGE_VERSION <= @{activity('LookupCurrentChangeTrackingVersionActivity').output.firstRow.CurrentChangeTrackingVersion}",
+							"value": "SELECT\n    DST.*,\n    CT.SYS_CHANGE_VERSION,\n    CT.SYS_CHANGE_OPERATION\nFROM\n    @{pipeline().parameters.schema_name}.@{pipeline().parameters.table_name} AS DST\n    RIGHT OUTER JOIN CHANGETABLE(CHANGES @{pipeline().parameters.schema_name}.@{pipeline().parameters.table_name}, @{activity('LookupLastChangeTrackingVersionActivity').output.firstRow.SYS_CHANGE_VERSION}) AS CT\n    ON map()\nWHERE\n    CT.SYS_CHANGE_VERSION <= @{activity('LookupCurrentChangeTrackingVersionActivity').output.firstRow.CurrentChangeTrackingVersion}",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -165,7 +165,7 @@
 						"referenceName": "EachTableDataset_noparameter",
 						"type": "DatasetReference"
 					},
-					"firstRowOnly": false
+					"firstRowOnly": true
 				}
 			}
 		],
