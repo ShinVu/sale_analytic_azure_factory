@@ -55,7 +55,13 @@
 						"referenceName": "full_load_load",
 						"type": "PipelineReference"
 					},
-					"waitOnCompletion": true
+					"waitOnCompletion": true,
+					"parameters": {
+						"TableList": {
+							"value": "@activity('LookupSchemaTables').output.value",
+							"type": "Expression"
+						}
+					}
 				}
 			}
 		],

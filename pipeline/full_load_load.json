@@ -12,110 +12,33 @@
 						"value": "@pipeline().parameters.TableList",
 						"type": "Expression"
 					},
+					"isSequential": false,
 					"activities": [
 						{
-							"name": "Copy data1",
-							"type": "Copy",
-							"dependsOn": [
-								{
-									"activity": "LookUp_CheckTablePhysicalPartition",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "SqlServerSource",
-									"queryTimeout": "02:00:00",
-									"partitionOption": "PhysicalPartitionsOfTable"
-								},
-								"sink": {
-									"type": "ParquetSink",
-									"storeSettings": {
-										"type": "AzureBlobFSWriteSettings",
-										"copyBehavior": "PreserveHierarchy"
-									},
-									"formatSettings": {
-										"type": "ParquetWriteSettings"
-									}
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "EachTableDataset",
-									"type": "DatasetReference",
-									"parameters": {
-										"schema_name": {
-											"value": "@item().schema_name",
-											"type": "Expression"
-										},
-										"table_name": {
-											"value": "@item().table_name",
-											"type": "Expression"
-										}
-									}
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "ParquetTable",
-									"type": "DatasetReference",
-									"parameters": {
-										"schema_name": {
-											"value": "@item().schema_name",
-											"type": "Expression"
-										},
-										"table_name": {
-											"value": "@item().table_name",
-											"type": "Expression"
-										}
-									}
-								}
-							]
-						},
-						{
-							"name": "LookUp_CheckTablePhysicalPartition",
-							"description": "Check whether current table has a physical partition",
-							"type": "Lookup",
+							"name": "full_load_each_table",
+							"description": "Full load each table from the for each activity",
+							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
 								"secureInput": false
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"source": {
-									"type": "SqlServerSource",
-									"sqlReaderQuery": "SELECT DISTINCT s.name AS SchemaName, t.name AS TableName, pf.name AS PartitionFunctionName, c.name AS ColumnName, iif(pf.name is null, 'no', 'yes') AS HasPartition\nFROM sys.tables AS t\nLEFT JOIN sys.objects AS o ON t.object_id = o.object_id\nLEFT JOIN sys.schemas AS s ON o.schema_id = s.schema_id\nLEFT JOIN sys.indexes AS i ON t.object_id = i.object_id \nLEFT JOIN sys.index_columns AS ic ON ic.partition_ordinal > 0 AND ic.index_id = i.index_id AND ic.object_id = t.object_id \nLEFT JOIN sys.columns AS c ON c.object_id = ic.object_id AND c.column_id = ic.column_id \nLEFT JOIN sys.partition_schemes ps ON i.data_space_id = ps.data_space_id \nLEFT JOIN sys.partition_functions pf ON pf.function_id = ps.function_id \nWHERE s.name=@{item().schema_name} AND t.name =  @{item().table_name};",
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
+								"pipeline": {
+									"referenceName": "full_load_each_table",
+									"type": "PipelineReference"
 								},
-								"dataset": {
-									"referenceName": "EachTableDataset_noparameter",
-									"type": "DatasetReference"
-								},
-								"firstRowOnly": false
+								"waitOnCompletion": true,
+								"parameters": {
+									"schema_name": {
+										"value": "@item().schema_name",
+										"type": "Expression"
+									},
+									"table_name": {
+										"value": "@item().table_name",
+										"type": "Expression"
+									}
+								}
 							}
 						}
 					]

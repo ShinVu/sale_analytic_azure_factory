@@ -1,0 +1,123 @@
+{
+	"name": "full_load_each_table",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookUp_CheckTablePhysicalPartition",
+				"description": "Check whether current table has a physical partition",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT DISTINCT s.name AS SchemaName, t.name AS TableName, pf.name AS PartitionFunctionName, c.name AS ColumnName, iif(pf.name is null, 'no', 'yes') AS HasPartition\nFROM sys.tables AS t\nLEFT JOIN sys.objects AS o ON t.object_id = o.object_id\nLEFT JOIN sys.schemas AS s ON o.schema_id = s.schema_id\nLEFT JOIN sys.indexes AS i ON t.object_id = i.object_id \nLEFT JOIN sys.index_columns AS ic ON ic.partition_ordinal > 0 AND ic.index_id = i.index_id AND ic.object_id = t.object_id \nLEFT JOIN sys.columns AS c ON c.object_id = ic.object_id AND c.column_id = ic.column_id \nLEFT JOIN sys.partition_schemes ps ON i.data_space_id = ps.data_space_id \nLEFT JOIN sys.partition_functions pf ON pf.function_id = ps.function_id \nWHERE s.name='@{pipeline().parameters.schema_name}' AND t.name =  '@{pipeline().parameters.table_name}';",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "EachTableDataset_noparameter",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "LookUp_CheckTablePhysicalPartition",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(string(activity('LookUp_CheckTablePhysicalPartition').output.firstRow.HasPartition),'yes')",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "checkModifiedDateColumn",
+							"description": "Pipeline to check whether table have a modifiedDate column",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "checkModifiedDateColumn",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"schema_name": {
+										"value": "@pipeline().parameters.schema_name",
+										"type": "Expression"
+									},
+									"table_name": {
+										"value": "@pipeline().parameters.table_name",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "copyDataByPartition",
+							"description": "Full load table from SQL server to ADL2 by physical partition",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "copyDataByPartition",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"schema_name": {
+										"value": "@pipeline().parameters.schema_name",
+										"type": "Expression"
+									},
+									"table_name": {
+										"value": "@pipeline().parameters.table_name",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"schema_name": {
+				"type": "string"
+			},
+			"table_name": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
