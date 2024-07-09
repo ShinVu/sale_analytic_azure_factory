@@ -1,0 +1,64 @@
+{
+	"name": "incremental_load_look_up",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookupSchemaTables",
+				"description": "Look up query to fetch all the table names belong to the schema",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT TABLE_SCHEMA as schema_name, TABLE_NAME as table_name\nFROM information_schema.tables\nWHERE TABLE_SCHEMA = 'SalesLT' AND TABLE_TYPE='BASE TABLE';",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "lookUpQueryTables",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "incremental_load_load",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "LookupSchemaTables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "incremental_load_load",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"TableList": {
+							"value": "@activity('LookupSchemaTables').output.value",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}
