@@ -1,5 +1,5 @@
 {
-	"name": "copyDataWithNoPartition",
+	"name": "copyDataWithDefaultPartiton",
 	"properties": {
 		"activities": [
 			{
@@ -18,7 +18,11 @@
 					"source": {
 						"type": "SqlServerSource",
 						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						"partitionOption": "DynamicRange",
+						"partitionSettings": {
+							"partitionUpperBound": "",
+							"partitionLowerBound": ""
+						}
 					},
 					"sink": {
 						"type": "ParquetSink",
@@ -57,7 +61,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ParquetTable",
+						"referenceName": "ParquetTableFullLoad",
 						"type": "DatasetReference",
 						"parameters": {
 							"schema_name": {

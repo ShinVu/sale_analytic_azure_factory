@@ -45,12 +45,12 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@not(equals(activity('LookupModifiedDateColumn').output.firstRow, null))",
+						"value": "@contains(activity('LookupModifiedDateColumn').output, 'firstRow')",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [
 						{
-							"name": "copyDataWithNoPartition",
+							"name": "copyDataWithDefaultPartition",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"policy": {
@@ -59,7 +59,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "copyDataWithNoPartition",
+									"referenceName": "copyDataWithDefaultPartiton",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true,

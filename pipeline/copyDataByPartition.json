@@ -58,7 +58,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ParquetTable",
+						"referenceName": "ParquetTableFullLoad",
 						"type": "DatasetReference",
 						"parameters": {
 							"schema_name": {
