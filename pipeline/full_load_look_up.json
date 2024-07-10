@@ -18,7 +18,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT TABLE_SCHEMA as schema_name, TABLE_NAME as table_name\nFROM information_schema.tables\nWHERE TABLE_SCHEMA = 'SalesLT' AND TABLE_TYPE='BASE TABLE';",
+						"sqlReaderQuery": "SELECT TABLE_SCHEMA as schema_name, TABLE_NAME as table_name\nFROM information_schema.tables\nWHERE TABLE_SCHEMA = 'SalesLT' AND TABLE_TYPE='BASE TABLE' AND TABLE_NAME != 'table_store_ChangeTracking_version';",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
