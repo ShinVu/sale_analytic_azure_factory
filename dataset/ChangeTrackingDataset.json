@@ -18,5 +18,6 @@
 				"precision": 19
 			}
 		]
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

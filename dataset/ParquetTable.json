@@ -1,5 +1,5 @@
 {
-	"name": "ParquetTableIncrementalLoad",
+	"name": "ParquetTable",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "linked_services_data_lake_storage_gen2_custom",
@@ -19,7 +19,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"folderPath": {
-					"value": "@{concat(dataset().schema_name,'/',dataset().table_name,'/','IncrementalLoad','/',utcNow('yyyy/MM/dd'))}",
+					"value": "@{concat(dataset().schema_name,'/',dataset().table_name,'/','FullLoad','/',utcNow('yyyy/MM/dd'))}",
 					"type": "Expression"
 				},
 				"fileSystem": "bronze-layer"
