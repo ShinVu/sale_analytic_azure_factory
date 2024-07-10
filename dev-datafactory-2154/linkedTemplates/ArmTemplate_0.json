@@ -136,31 +136,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Parquet1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "linked_services_data_lake_storage_gen2_custom",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "full-load",
-						"fileSystem": "bronze-layer"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/linked_services_data_lake_storage_gen2_custom')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ParquetTable')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -184,6 +159,78 @@
 						"type": "AzureBlobFSLocation",
 						"folderPath": {
 							"value": "@{concat(dataset().schema_name,'/',dataset().table_name,'/','FullLoad','/',utcNow('yyyy/MM/dd'))}",
+							"type": "Expression"
+						},
+						"fileSystem": "bronze-layer"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/linked_services_data_lake_storage_gen2_custom')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ParquetTableFullLoad')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linked_services_data_lake_storage_gen2_custom",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"schema_name": {
+						"type": "string"
+					},
+					"table_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": {
+							"value": "@{concat(dataset().schema_name,'/',dataset().table_name,'/','FullLoad','/',utcNow('yyyy/MM/dd'))}",
+							"type": "Expression"
+						},
+						"fileSystem": "bronze-layer"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/linked_services_data_lake_storage_gen2_custom')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ParquetTableIncrementalLoad')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linked_services_data_lake_storage_gen2_custom",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"schema_name": {
+						"type": "string"
+					},
+					"table_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": {
+							"value": "@{concat(dataset().schema_name,'/',dataset().table_name,'/','IncrementalLoad','/',utcNow('yyyy/MM/dd'))}",
 							"type": "Expression"
 						},
 						"fileSystem": "bronze-layer"
@@ -225,7 +272,70 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ChangeTrackingDataset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_server",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "TableName",
+						"type": "varchar"
+					},
+					{
+						"name": "SYS_CHANGE_VERSION",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_server')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/EachTableDataset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_server",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"schema_name": {
+						"type": "string"
+					},
+					"table_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().schema_name",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().table_name",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_server')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EachTableDataset_noparameter')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -243,7 +353,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SqlServerTable1')]",
+			"name": "[concat(parameters('factoryName'), '/lookUpPerTable')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -253,51 +363,8 @@
 				},
 				"annotations": [],
 				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "AddressID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "AddressLine1",
-						"type": "nvarchar"
-					},
-					{
-						"name": "AddressLine2",
-						"type": "nvarchar"
-					},
-					{
-						"name": "City",
-						"type": "nvarchar"
-					},
-					{
-						"name": "StateProvince",
-						"type": "nvarchar"
-					},
-					{
-						"name": "CountryRegion",
-						"type": "nvarchar"
-					},
-					{
-						"name": "PostalCode",
-						"type": "nvarchar"
-					},
-					{
-						"name": "rowguid",
-						"type": "uniqueidentifier"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "SalesLT",
-					"table": "Address"
-				}
+				"schema": [],
+				"typeProperties": {}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/sql_server')]"
@@ -322,34 +389,23 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/EachTablePartitionKey')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sql_server",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [],
-				"typeProperties": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql_server')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/full_load')]",
+			"name": "[concat(parameters('factoryName'), '/copyDataByDynamicPartition')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"description": "copy data by dynamic partition using ModifiedDate column",
 				"activities": [
 					{
-						"name": "LookupSchemaTables",
-						"description": "Look up query to fetch all the table names belong to the schema",
-						"type": "Lookup",
-						"dependsOn": [],
+						"name": "CopyDataByDynamicPartition",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "LookupColumnMinMax",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -361,170 +417,73 @@
 						"typeProperties": {
 							"source": {
 								"type": "SqlServerSource",
-								"sqlReaderQuery": "SELECT TABLE_SCHEMA as schema_name, TABLE_NAME as table_name\nFROM information_schema.tables\nWHERE TABLE_SCHEMA = 'SalesLT';",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "lookUpQueryTables",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "forEachTable",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "LookupSchemaTables",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('LookupSchemaTables').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "CopyEachTable",
-									"description": "Copy each table from the lookup activities",
-									"type": "Copy",
-									"dependsOn": [
-										{
-											"activity": "LookUpTablePartitionMinMax",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "SqlServerSource",
-											"sqlReaderQuery": {
-												"value": "@{concat('SELECT * FROM ',item().schema_name,'.',item().table_name,' WHERE ?DfDynamicRangePartitionCondition')}",
-												"type": "Expression"
-											},
-											"queryTimeout": "02:00:00",
-											"partitionOption": "DynamicRange",
-											"partitionSettings": {
-												"partitionColumnName": "ModifiedDate",
-												"partitionUpperBound": "",
-												"partitionLowerBound": ""
-											}
-										},
-										"sink": {
-											"type": "ParquetSink",
-											"storeSettings": {
-												"type": "AzureBlobFSWriteSettings"
-											},
-											"formatSettings": {
-												"type": "ParquetWriteSettings"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "EachTableDataset",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "ParquetTable",
-											"type": "DatasetReference",
-											"parameters": {
-												"schema_name": {
-													"value": "@item().schema_name",
-													"type": "Expression"
-												},
-												"table_name": {
-													"value": "@item().table_name",
-													"type": "Expression"
-												}
-											}
-										}
-									]
+								"sqlReaderQuery": {
+									"value": "SELECT * FROM @{pipeline().parameters.schema_name}.@{pipeline().parameters.table_name} WHERE ?DfDynamicRangePartitionCondition;",
+									"type": "Expression"
 								},
-								{
-									"name": "LookUpTablePartitionMinMax",
-									"description": "Look up for the min,max value of the partition in copy activity",
-									"type": "Lookup",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
+								"queryTimeout": "02:00:00",
+								"partitionOption": "DynamicRange",
+								"partitionSettings": {
+									"partitionColumnName": {
+										"value": "@{pipeline().parameters.column_name}",
+										"type": "Expression"
 									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "SqlServerSource",
-											"sqlReaderQuery": {
-												"value": "@{\n    concat(\n        'SELECT \n            MAX(YEAR(ModifiedDate)) AS MaxModifiedDate,\n            MIN(YEAR(ModifiedDate)) AS MinModifiedDate\n        FROM ', item().schema_name, '.', item().table_name\n    )\n}",
-												"type": "Expression"
-											},
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"dataset": {
-											"referenceName": "EachTablePartitionKey",
-											"type": "DatasetReference",
-											"parameters": {}
-										},
-										"firstRowOnly": false
+									"partitionUpperBound": {
+										"value": "@{activity('LookupColumnMinMax').output.firstRow.MAX_VALUE}",
+										"type": "Expression"
+									},
+									"partitionLowerBound": {
+										"value": "@{activity('LookupColumnMinMax').output.firstRow.MIN_VALUE}",
+										"type": "Expression"
 									}
 								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/lookUpQueryTables')]",
-				"[concat(variables('factoryId'), '/datasets/EachTableDataset')]",
-				"[concat(variables('factoryId'), '/datasets/ParquetTable')]",
-				"[concat(variables('factoryId'), '/datasets/EachTablePartitionKey')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/incremental_load')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "EachTableDataset_noparameter",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ParquetTableFullLoad",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema_name": {
+										"value": "@pipeline().parameters.schema_name",
+										"type": "Expression"
+									},
+									"table_name": {
+										"value": "@pipeline().parameters.table_name",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
 					{
-						"name": "LookupSchemaTables",
-						"description": "Look up query to fetch all the table names belong to the schema",
+						"name": "LookupColumnMinMax",
+						"description": "Look up for min max of column used for dynamic partition",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
@@ -538,145 +497,335 @@
 						"typeProperties": {
 							"source": {
 								"type": "SqlServerSource",
-								"sqlReaderQuery": "SELECT TABLE_SCHEMA as schema_name, TABLE_NAME as table_name\nFROM information_schema.tables\nWHERE TABLE_SCHEMA = 'SalesLT';",
+								"sqlReaderQuery": {
+									"value": "SELECT MIN(@{pipeline().parameters.column_name}) AS MIN_VALUE,\n    MAX(@{pipeline().parameters.column_name}) AS MAX_VALUE \nFROM @{pipeline().parameters.schema_name}.@{pipeline().parameters.table_name};",
+									"type": "Expression"
+								},
 								"queryTimeout": "02:00:00",
 								"partitionOption": "None"
 							},
 							"dataset": {
-								"referenceName": "lookUpQueryTables",
+								"referenceName": "EachTableDataset_noparameter",
 								"type": "DatasetReference",
 								"parameters": {}
 							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "forEachTable",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "LookupSchemaTables",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('LookupSchemaTables').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "CopyEachTable",
-									"description": "Copy each table from the lookup activities",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "SqlServerSource",
-											"sqlReaderQuery": {
-												"value": "@{concat('SELECT * FROM ',item().schema_name,'.',item().table_name)}",
-												"type": "Expression"
-											},
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "ParquetSink",
-											"storeSettings": {
-												"type": "AzureBlobFSWriteSettings"
-											},
-											"formatSettings": {
-												"type": "ParquetWriteSettings"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "EachTableDataset",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "ParquetTable",
-											"type": "DatasetReference",
-											"parameters": {
-												"schema_name": {
-													"value": "@item().schema_name",
-													"type": "Expression"
-												},
-												"table_name": {
-													"value": "@item().table_name",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
+							"firstRowOnly": true
 						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"annotations": []
+				"parameters": {
+					"schema_name": {
+						"type": "string"
+					},
+					"table_name": {
+						"type": "string"
+					},
+					"column_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-07-10T08:55:28Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/lookUpQueryTables')]",
-				"[concat(variables('factoryId'), '/datasets/EachTableDataset')]",
-				"[concat(variables('factoryId'), '/datasets/ParquetTable')]"
+				"[concat(variables('factoryId'), '/datasets/EachTableDataset_noparameter')]",
+				"[concat(variables('factoryId'), '/datasets/ParquetTableFullLoad')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/trigger1')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
+			"name": "[concat(parameters('factoryName'), '/copyDataByPartition')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
+				"activities": [
 					{
-						"pipelineReference": {
-							"referenceName": "full_load",
-							"type": "PipelineReference"
+						"name": "CopyTableByPhysicalPartition",
+						"description": "Copy table from SQL server to ADL2 by physical partition",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
 						},
-						"parameters": {}
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "PhysicalPartitionsOfTable"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "EachTableDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema_name": {
+										"value": "@pipeline().parameters.schema_name",
+										"type": "Expression"
+									},
+									"table_name": {
+										"value": "@pipeline().parameters.table_name",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ParquetTableFullLoad",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema_name": {
+										"value": "@pipeline().parameters.schema_name",
+										"type": "Expression"
+									},
+									"table_name": {
+										"value": "@pipeline().parameters.table_name",
+										"type": "Expression"
+									}
+								}
+							}
+						]
 					}
 				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Month",
-						"interval": 1,
-						"startTime": "2024-07-07T00:00:00",
-						"timeZone": "SE Asia Standard Time"
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"schema_name": {
+						"type": "string"
+					},
+					"table_name": {
+						"type": "string"
 					}
-				}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-07-10T08:55:29Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/full_load')]"
+				"[concat(variables('factoryId'), '/datasets/EachTableDataset')]",
+				"[concat(variables('factoryId'), '/datasets/ParquetTableFullLoad')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copyDataWithDefaultPartiton')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "DynamicRange",
+								"partitionSettings": {
+									"partitionUpperBound": "",
+									"partitionLowerBound": ""
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "EachTableDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema_name": {
+										"value": "@pipeline().parameters.schema_name",
+										"type": "Expression"
+									},
+									"table_name": {
+										"value": "@pipeline().parameters.table_name",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ParquetTableFullLoad",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema_name": {
+										"value": "@pipeline().parameters.schema_name",
+										"type": "Expression"
+									},
+									"table_name": {
+										"value": "@pipeline().parameters.table_name",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"schema_name": {
+						"type": "string"
+					},
+					"table_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-07-10T08:55:28Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/EachTableDataset')]",
+				"[concat(variables('factoryId'), '/datasets/ParquetTableFullLoad')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copyDataWithNoPartition')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "EachTableDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema_name": {
+										"value": "@pipeline().parameters.schema_name",
+										"type": "Expression"
+									},
+									"table_name": {
+										"value": "@pipeline().parameters.table_name",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ParquetTable",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema_name": {
+										"value": "@pipeline().parameters.schema_name",
+										"type": "Expression"
+									},
+									"table_name": {
+										"value": "@pipeline().parameters.table_name",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"schema_name": {
+						"type": "string"
+					},
+					"table_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-07-09T13:00:06Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/EachTableDataset')]",
+				"[concat(variables('factoryId'), '/datasets/ParquetTable')]"
 			]
 		}
 	]
